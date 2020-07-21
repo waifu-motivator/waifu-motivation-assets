@@ -1,0 +1,7 @@
+out
+.idea/
+node_modules
+.vscode-test/
+*.vsix
+.vscode/
+visuals/
