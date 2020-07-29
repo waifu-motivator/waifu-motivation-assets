@@ -6,7 +6,7 @@ Waifu Motivation Assets
 ## Prerequisites
 
 - [Yarn Package Manager](https://classic.yarnpkg.com/en/docs/install/#debian-stable)
-- `ts-node` installed globally (run `yarn global add ts-nod`)
+- `ts-node` installed globally (run `yarn global add ts-node`)
 
 
 ## First time setup
