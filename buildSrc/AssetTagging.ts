@@ -59,7 +59,6 @@ Promise.all(
   scanDirectories()
 )
   .then(allAssets => {
-    console.log('Calculating differences');
     allAssets.forEach(assetCategory => {
       const {
         assetList,
@@ -86,4 +85,7 @@ Promise.all(
         encoding: 'utf-8'
       });
     });
+  })
+  .then(() => {
+    console.log('Asset lists generated!');
   });
