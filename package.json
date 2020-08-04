@@ -9,7 +9,8 @@
   "private": false,
   "scripts": {
     "upload": "ts-node buildSrc/AssetUpload.ts",
-    "download": "ts-node buildSrc/AssetDownload.ts"
+    "download": "ts-node buildSrc/AssetDownload.ts",
+    "build:asset-lists": "ts-node buildSrc/AssetTagging.ts"
   },
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",
