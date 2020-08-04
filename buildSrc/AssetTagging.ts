@@ -13,7 +13,7 @@ const scanDirectories = () => {
       .then((items: string[]) => {
         return {
           directory,
-          items: items.filter(item => !(item.endsWith('.checksum.txt') && item.endsWith('assets.json')))
+          items: items.filter(item => !(item.endsWith('.checksum.txt') || item.endsWith('assets.json')))
             .map(item => `${
               item.substring(__dirname.length).replace(/\\/g, '/')}`)
         };
