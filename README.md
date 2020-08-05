@@ -16,7 +16,15 @@ Waifu Motivation Assets
 
 ## Usage
 
-Just add assets to the directories defined in `AssetTools` and just run `yarn upload` to send them to the cloud!
+### Adding Assets
+
+Just add assets to the directories defined in `AssetTools`.
+ 
+### Uploading Assets
+
+1. Be sure to do a `git pull` to update the assets download before uploading to avoid overwriting changed assets
+1. Run `yarn build:asset-lists` to generate the `assets.json` with the items you added.
+1. Run `yarn upload` to send them to the cloud!
 
 
 Be sure to commit your changes so we all can be in sync!
