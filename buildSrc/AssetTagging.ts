@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import {assetDirectories, rootDirectory, walkDir} from "./AssetTools";
 import {values} from 'lodash';
+import {imageSize} from 'image-size';
 
 
 console.log('Starting asset list generation.');
@@ -13,9 +14,12 @@ const scanDirectories = () => {
       .then((items: string[]) => {
         return {
           directory,
-          items: items.filter(item => !(item.endsWith('.checksum.txt') || item.endsWith('assets.json')))
-            .map(item => `${
-              item.substring(__dirname.length).replace(/\\/g, '/')}`)
+          assets: items.filter(item => !(item.endsWith('.checksum.txt') || item.endsWith('assets.json')))
+            .map(item => ({
+              fullPath: item,
+              relativePath: `${
+                item.substring(__dirname.length).replace(/\\/g, '/')}`
+            }))
         };
       })
   );
@@ -36,23 +40,37 @@ function readPreviousAssets(directory: string) {
   };
 }
 
+type AssetDefinition = {
+  fullPath: string;
+  relativePath: string;
+};
+
+function getDimensions(fullPath: string) {
+  const {height, width} = imageSize(fullPath);
+  return {
+    width,
+    height
+  };
+}
+
 const generators: {
   [assetDirectory: string]: {
-    generator: (assetPath: string) => any;
+    generator: (assetDefinition: AssetDefinition) => any;
     idExtractor: (generatedItem: any) => string;
   }
 } = {
   'visuals': {
-    generator: (assetPath: string) => ({
-      imagePath: assetPath,
+    generator: ({fullPath, relativePath}: AssetDefinition) => ({
+      imagePath: relativePath,
       imageAlt: "",
+      imageDimensions: getDimensions(fullPath),
       categories:[],
     }),
     idExtractor: (item: any) => item.imagePath //todo: consolidate all the things to just be `path`
   },
 };
 
-function getAssetDefinitionGenerator({directory}: { directory: string; items: string[] }) {
+function getAssetDefinitionGenerator({directory}: { directory: string; assets: AssetDefinition[] }) {
   return generators[directory];
 }
 
@@ -79,7 +97,7 @@ Promise.all(
       const previousAssetsById = assetList.reduce(dictionaryReducer, {});
 
       const newAssets = values([
-        ...assetCategory.items.map(assetPath => {
+        ...assetCategory.assets.map(assetPath => {
           const assetAttributes = generator(assetPath);
           const previousAsset = previousAssetsById[idExtractor(assetAttributes)];
           return ({
