@@ -46,6 +46,7 @@ const generators: {
     generator: (assetPath: string) => ({
       imagePath: assetPath,
       imageAlt: "",
+      categories:[],
     }),
     idExtractor: (item: any) => item.imagePath //todo: consolidate all the things to just be `path`
   },
@@ -64,20 +65,29 @@ Promise.all(
         assetList,
         assetListPath
       } = readPreviousAssets(assetCategory.directory);
+
       const {
         generator,
         idExtractor
       } = getAssetDefinitionGenerator(assetCategory);
-      const newAssets = values([
-        ...assetCategory.items.map(assetPath => ({
-          ...generator(assetPath),
-          categories: []
-        })),
-        ...assetList
-      ].reduce((accum, next) => ({
+
+      const dictionaryReducer = (accum: any, next: any) => ({
         ...accum,
         [idExtractor(next)]: next
-      }), {}));
+      });
+
+      const previousAssetsById = assetList.reduce(dictionaryReducer, {});
+
+      const newAssets = values([
+        ...assetCategory.items.map(assetPath => {
+          const assetAttributes = generator(assetPath);
+          const previousAsset = previousAssetsById[idExtractor(assetAttributes)];
+          return ({
+            ...assetAttributes,
+            ...previousAsset,
+          });
+        }),
+      ].reduce(dictionaryReducer, {}));
 
       fs.writeFileSync(assetListPath, JSON.stringify(
         newAssets, null, 2
