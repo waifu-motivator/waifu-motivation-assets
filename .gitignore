@@ -5,3 +5,4 @@ node_modules
 *.vsix
 .vscode/
 visuals/
+audible/

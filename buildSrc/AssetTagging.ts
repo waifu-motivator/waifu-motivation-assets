@@ -59,6 +59,14 @@ const generators: {
     idExtractor: (generatedItem: any) => string;
   }
 } = {
+  'audible': {
+    generator: ({relativePath}: AssetDefinition) => ({
+      path: relativePath,
+      categories:[],
+    }),
+    idExtractor: (item: any) => item.path //todo: consolidate all the things to just be `path`
+
+  },
   'visuals': {
     generator: ({fullPath, relativePath}: AssetDefinition) => ({
       imagePath: relativePath,
