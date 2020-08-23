@@ -69,12 +69,13 @@ const generators: {
   },
   'visuals': {
     generator: ({fullPath, relativePath}: AssetDefinition) => ({
-      imagePath: relativePath,
+      imagePath: relativePath, // todo: remove once plugin migrated.
+      path: relativePath,
       imageAlt: "",
       imageDimensions: getDimensions(fullPath),
       categories:[],
     }),
-    idExtractor: (item: any) => item.imagePath //todo: consolidate all the things to just be `path`
+    idExtractor: (item: any) => item.path //todo: consolidate all the things to just be `path`
   },
 };
 
