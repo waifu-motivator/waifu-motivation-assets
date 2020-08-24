@@ -13,6 +13,7 @@ export const rootDirectory =
 export const assetDirectories = [
   'visuals',
   'audible',
+  'text'
 ];
 
 export const BUCKET_NAME = 'waifu-motivation-assets';

@@ -218,5 +218,19 @@
   "audible/salutation/ara_ara_sayonara.wav.checksum.txt": "40ce010c5913edac87d9c7f951bcd945",
   "audible/salutation/sayonara_bye_bye.wav.checksum.txt": "aff547999312fb8192fdf6cb6f78c29f",
   "audible/salutation/sayonara_senpai.wav.checksum.txt": "b9156132de5628c250e96239e7b46e72",
-  "audible/shocked/ohmygah.mp3.checksum.txt": "66e5d6e61f6700f18b17742b0f728044"
+  "audible/shocked/ohmygah.mp3.checksum.txt": "66e5d6e61f6700f18b17742b0f728044",
+  "text/assets.json": "df63dbce06b089f911ec37592b17b782",
+  "text/celebration.json": "8c24b046c4fb7cd500d762716c0afa96",
+  "text/disappointment.json": "f5257bc646432139775a874500ff16f3",
+  "text/shocked.json": "c7c4da162b2a8400c3be0bda2b157c8c",
+  "text/smug.json": "47878f1acc50e483f428ad4674211da9",
+  "text/waiting.json": "7a91059818dc054d918d97df16663d03",
+  "text/welcoming.json": "0e3c09436d3ba70ac873afdca9b2d029",
+  "text/assets.json.checksum.txt": "f328a0d9bc8503e033b8317b16a7c074",
+  "text/celebration.json.checksum.txt": "02bab63ca8e26fd284c8768e9dc1b7ad",
+  "text/disappointment.json.checksum.txt": "4461b4644567d977e9d2f1c29f91ccef",
+  "text/shocked.json.checksum.txt": "f9126277b2a7a313c33ed88bee786ef0",
+  "text/smug.json.checksum.txt": "e0351b99bddbf107b67918b1d2e70299",
+  "text/waiting.json.checksum.txt": "f826aa13b61b1008eabd040f7d3c23d9",
+  "text/welcoming.json.checksum.txt": "ee488e6e0c39980bb6d604192a52f9f7"
 }

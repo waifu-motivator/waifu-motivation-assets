@@ -7,6 +7,7 @@ import {imageSize} from 'image-size';
 
 console.log('Starting asset list generation.');
 
+const repoDir = path.resolve(__dirname, '..');
 const scanDirectories = () => {
   console.log("Scanning asset directories");
   return assetDirectories.map(directory =>
@@ -18,7 +19,7 @@ const scanDirectories = () => {
             .map(item => ({
               fullPath: item,
               relativePath: `${
-                item.substring(__dirname.length).replace(/\\/g, '/')}`
+                item.substring(repoDir.length + directory.length + 2).replace(/\\/g, '/')}`
             }))
         };
       })
@@ -65,7 +66,13 @@ const generators: {
       categories:[],
     }),
     idExtractor: (item: any) => item.path //todo: consolidate all the things to just be `path`
-
+  },
+  'text': {
+    generator: ({relativePath}: AssetDefinition) => ({
+      path: relativePath,
+      categories:[],
+    }),
+    idExtractor: (item: any) => item.path //todo: consolidate all the things to just be `path`
   },
   'visuals': {
     generator: ({fullPath, relativePath}: AssetDefinition) => ({
