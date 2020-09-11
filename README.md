@@ -26,5 +26,13 @@ Just add assets to the directories defined in `AssetTools`.
 1. Run `yarn build:asset-lists` to generate the `assets.json` with the items you added.
 1. Run `yarn upload` to send them to the cloud!
 
+### Blacklisting Assets
+
+Some assets may have been uploaded that we don't want to appear anymore.
+
+1. Move the entry from `syncedAssets.json` to `blacklistedAssets.json`.
+1. Remove the asset from the appropriate `asset.json` file.
+1. Run `yarn upload` to publish changes.
+
 
 Be sure to commit your changes so we all can be in sync!

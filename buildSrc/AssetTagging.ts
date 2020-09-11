@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import {assetDirectories, rootDirectory, walkDir} from "./AssetTools";
+import {assetDirectories, getBlackListedAssets, rootDirectory, StringDictionary, walkDir} from "./AssetTools";
 import {values} from 'lodash';
 import {imageSize} from 'image-size';
 
@@ -90,6 +90,9 @@ function getAssetDefinitionGenerator({directory}: { directory: string; assets: A
   return generators[directory];
 }
 
+const blackListedAssets: StringDictionary<string> =
+  getBlackListedAssets();
+
 Promise.all(
   scanDirectories()
 )
@@ -121,7 +124,9 @@ Promise.all(
             ...previousAsset,
           });
         }),
-      ].reduce(dictionaryReducer, {}));
+      ]
+        .filter(asset => !blackListedAssets[`${assetCategory.directory}/${asset.path}`])
+        .reduce(dictionaryReducer, {}));
 
       fs.writeFileSync(assetListPath, JSON.stringify(
         newAssets, null, 2

@@ -4,7 +4,7 @@ import FileType from 'file-type';
 import {
   assetDirectories, BUCKET_NAME,
   buildS3Client,
-  createChecksum,
+  createChecksum, getBlackListedAssets,
   getSyncedAssets, rootDirectory,
   StringDictionary,
   walkDir
@@ -14,10 +14,12 @@ import toPairs from 'lodash/toPairs';
 const syncedAssets: StringDictionary<string> =
   getSyncedAssets();
 
+const blacklistedAssets: StringDictionary<string> =
+  getBlackListedAssets();
+
 function buildKey(filePath: string): string {
   return filePath.substr(rootDirectory.length + 1);
 }
-
 
 const s3 = buildS3Client();
 
@@ -26,44 +28,44 @@ const uploadUnsyncedAssets = (workToBeDone: [string, string][]): Promise<[string
   if (next) {
     const [filePath,] = next;
     return FileType.fromFile(filePath)
-    .then((fileType: any) => {
-      if(filePath.endsWith('.svg')){
-        return {mime: 'image/svg+xml'};
-      }
-      
-      if (!fileType && filePath.endsWith(".xml")) {
-        return { mime: "application/xml" };
-      }
+      .then((fileType: any) => {
+        if (filePath.endsWith('.svg')) {
+          return {mime: 'image/svg+xml'};
+        }
 
-      if (
-        !fileType &&
-        (filePath.endsWith(".map") || filePath.endsWith(".txt"))
-      ) {
-        return { mime: "text/plain" };
-      }
+        if (!fileType && filePath.endsWith(".xml")) {
+          return {mime: "application/xml"};
+        }
 
-      if (!fileType && filePath.endsWith(".css")) {
-        return { mime: "text/css" };
-      }
+        if (
+          !fileType &&
+          (filePath.endsWith(".map") || filePath.endsWith(".txt"))
+        ) {
+          return {mime: "text/plain"};
+        }
 
-      if (!fileType && filePath.endsWith(".html")) {
-        return { mime: "text/html" };
-      }
+        if (!fileType && filePath.endsWith(".css")) {
+          return {mime: "text/css"};
+        }
 
-      if (!fileType && filePath.endsWith(".json")) {
-        return { mime: "application/json" };
-      }
+        if (!fileType && filePath.endsWith(".html")) {
+          return {mime: "text/html"};
+        }
 
-      if (!fileType && filePath.endsWith(".js")) {
-        return { mime: "application/javascript" };
-      }
+        if (!fileType && filePath.endsWith(".json")) {
+          return {mime: "application/json"};
+        }
 
-      if (!fileType) {
-        throw Error(`File ${filePath} does not have a type!!`);
-      }
+        if (!fileType && filePath.endsWith(".js")) {
+          return {mime: "application/javascript"};
+        }
 
-      return fileType;
-    })
+        if (!fileType) {
+          throw Error(`File ${filePath} does not have a type!!`);
+        }
+
+        return fileType;
+      })
       .then(fileType => {
         return new Promise<boolean>((res) => {
           const fileStream = fs.createReadStream(filePath);
@@ -110,50 +112,55 @@ const scanDirectories = () => {
     walkDir(path.join(rootDirectory, directory)));
 };
 
+function isNotBlackListed(assetKey: string, currentAssetChecksum: string) {
+  return blacklistedAssets[assetKey] !== currentAssetChecksum;
+}
+
 Promise.all(
   scanDirectories()
 )
   .then(directories => directories.reduce((accum, dirs) => accum.concat(dirs), []))
   .then(allAssets => {
-    console.log('Calculating differences');
-    return Promise.all(
-      allAssets.map(assetPath =>
-        new Promise<Buffer>((res, rej) =>
-          fs.readFile(assetPath, (err, dat) => {
-            if (err) {
-              rej(err);
-            } else {
-              res(dat);
-            }
-          }))
-          .then(createChecksum)
-          .then(checkSum => ({
-            assetPath,
-            checkSum
-          }))
-      )
-    ).then((assetToCheckSums) =>
-      assetToCheckSums.reduce(
-        (accum: StringDictionary<string>, assetToChecksum) => {
-          accum[assetToChecksum.assetPath] = assetToChecksum.checkSum;
-          return accum;
-        }, {})
-    );
-  }
+      console.log('Calculating differences');
+      return Promise.all(
+        allAssets.map(assetPath =>
+          new Promise<Buffer>((res, rej) =>
+            fs.readFile(assetPath, (err, dat) => {
+              if (err) {
+                rej(err);
+              } else {
+                res(dat);
+              }
+            }))
+            .then(createChecksum)
+            .then(checkSum => ({
+              assetPath,
+              checkSum
+            }))
+        )
+      ).then((assetToCheckSums) =>
+        assetToCheckSums.reduce(
+          (accum: StringDictionary<string>, assetToChecksum) => {
+            accum[assetToChecksum.assetPath] = assetToChecksum.checkSum;
+            return accum;
+          }, {})
+      );
+    }
   )
   .then(assetToCheckSum => {
     console.log('Calculating Deltas');
     return Object.keys(assetToCheckSum)
       .filter(assetPath => {
-        const assetKey = buildKey(assetPath);
-        return !syncedAssets[assetKey] ||
-          syncedAssets[assetKey] !== assetToCheckSum[assetPath];
-      }
+          const assetKey = buildKey(assetPath);
+          const currentAssetChecksum = assetToCheckSum[assetPath];
+          return isNotBlackListed(assetKey, currentAssetChecksum) &&
+            (!syncedAssets[assetKey] || syncedAssets[assetKey] !== currentAssetChecksum);
+        }
       )
       .map(changedAsset => ({
-        key: changedAsset,
-        value: assetToCheckSum[changedAsset]
-      })
+          key: changedAsset,
+          value: assetToCheckSum[changedAsset]
+        })
       )
       .reduce((accum: StringDictionary<string>, kv) => {
         console.log(`${kv.key} is new or changed`);
@@ -170,14 +177,14 @@ Promise.all(
         const assetCheckSumPath = `${assetPath}.checksum.txt`;
         fs.writeFileSync(path.resolve(
           assetCheckSumPath
-        ), checksum, 'utf8')
+        ), checksum, 'utf8');
         const checkSumCheckSum = // yo dawg.
           createChecksum(
             fs.readFileSync(
               assetCheckSumPath, 'utf8'
             )
           );
-        return [assetCheckSumPath, checkSumCheckSum]
+        return [assetCheckSumPath, checkSumCheckSum];
       });
 
     return {
