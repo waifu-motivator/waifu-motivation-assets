@@ -1,7 +1,7 @@
 Waifu Motivation Assets
 ---
 
-![Rikka Finger spin](https://waifu.assets.unthrottled.io/visuals/rikka-spin.gif)
+![Rikka Finger spin](https://waifu.assets.unthrottled.io/visuals/happy/reina_hibike.gif)
 
 ## Prerequisites
 
@@ -23,6 +23,7 @@ Just add assets to the directories defined in `AssetTools`.
 ### Uploading Assets
 
 1. Be sure to do a `git pull` to update the assets download before uploading to avoid overwriting changed assets
+    - If you did a `pull` and you got changes in the `syncedAssets.json` please run `yarn download` before continuing, and update accordingly.
 1. Run `yarn build:asset-lists` to generate the `assets.json` with the items you added.
 1. Run `yarn upload` to send them to the cloud!
 
