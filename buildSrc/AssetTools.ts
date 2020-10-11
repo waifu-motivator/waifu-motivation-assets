@@ -54,4 +54,4 @@ export const getSyncedAssets = () => JSON.parse(
   fs.readFileSync(path.join(rootDirectory, 'syncedAssets.json'), 'utf-8'));
 
 export const getBlackListedAssets = () => JSON.parse(
-  fs.readFileSync(path.join(rootDirectory, 'blackListedAssets.json'), 'utf-8'));
+  fs.readFileSync(path.join(rootDirectory, 'blacklistedAssets.json'), 'utf-8'));
