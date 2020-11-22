@@ -1,3 +1,10 @@
+# Deprecated!!
+
+This project has been replaced by the [Asset Management UI](https://github.com/waifu-motivator/waifu-asset-management-ui).
+
+**Please use that project to manage our waifu!**
+
+
 Waifu Motivation Assets
 ---
 
